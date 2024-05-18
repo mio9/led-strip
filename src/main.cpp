@@ -6,7 +6,7 @@
 
 // LED things
 #define NUM_LEDS 120
-#define DATA_PIN D11
+#define DATA_PIN D13
 CRGB leds[NUM_LEDS];
 
 // Net/web things
@@ -25,6 +25,8 @@ void setup()
     server.on("/led", handleLED);
     server.onNotFound(handleNotFound); // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    Serial.println(WIFI_SSID);
+    Serial.println(WIFI_PASSWORD);
     Serial.print("Connecting");
     while (WiFi.status() != WL_CONNECTED)
     {
