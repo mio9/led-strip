@@ -3,10 +3,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <credential.h>
+#include <hex_lib.h>
 
 // LED things
-#define NUM_LEDS 120
-#define DATA_PIN D13
+#define NUM_LEDS 256
+#define DATA_PIN D8
 CRGB leds[NUM_LEDS];
 
 // Net/web things
@@ -42,13 +43,21 @@ void setup()
 
     server.begin(); // Actually start the server
     Serial.println("HTTP server started");
-    Serial.println("LED strip init to white");
-    setAllLeds(CRGB::White);
 }
 
 void loop()
 {
-    server.handleClient();
+    for (int i = 0; i < NUM_LEDS; i++){
+        leds[i] = CRGB::White;
+        FastLED.show();
+        delay(2);
+    }
+    for (int i = 0; i < NUM_LEDS; i++){
+        leds[i] = CRGB::Red;
+        FastLED.show();
+        delay(2);
+    }
+    // server.handleClient();
 }
 
 void handleRoot()
@@ -57,18 +66,7 @@ void handleRoot()
     Serial.println("Hello World!");
 }
 
-static unsigned char nibble(char c)
-{
-    return c % 16 + 9 * (c >> 6);
-}
 
-unsigned int hex2num(const char *s)
-{
-    unsigned int r = 0;
-    while (*s)
-        r = (r << 4) | nibble(*s++);
-    return r;
-}
 
 void handleLED()
 {
@@ -76,6 +74,7 @@ void handleLED()
     Serial.println(color);
     int color_int = hex2num(color.c_str());
     setAllLeds(color_int);
+    Serial.println(DATA_PIN);
     server.send(200, "text/plain", "OK");
 }
 
@@ -88,7 +87,6 @@ void setAllLeds(CRGB color)
 // Fade in to white
 void fadeIn()
 {
-
 }
 
 void handleNotFound()
